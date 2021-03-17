@@ -343,11 +343,11 @@ namespace gpstk {
       ObsID::validRinexTrackingCodes['C']['1'] = "IQXP* ";
       ObsID::validRinexTrackingCodes['C']['2'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['6'] = "IQX* ";
-      ObsID::validRinexTrackingCodes['C']['7'] = "IQX* ";
-      ObsID::validRinexTrackingCodes['C']['5'] = "IQX* ";
+      ObsID::validRinexTrackingCodes['C']['7'] = "IQXD* ";
+      ObsID::validRinexTrackingCodes['C']['5'] = "IQXPC* ";
       ObsID::validRinexTrackingCodes['C']['8'] = "IQX* ";
 
-      ObsID::validRinexTrackingCodes['J']['1'] = "CSLXZ* ";
+      ObsID::validRinexTrackingCodes['J']['1'] = "CSLXZB* ";
       ObsID::validRinexTrackingCodes['J']['2'] = "SLX* ";
       ObsID::validRinexTrackingCodes['J']['5'] = "IQX* ";
       ObsID::validRinexTrackingCodes['J']['6'] = "SLX* ";

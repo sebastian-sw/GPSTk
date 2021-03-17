@@ -36,6 +36,8 @@ include( CustomPythonSetup.cmake
 #------------------------------------------------------------
 if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
 
+#set(Python3_ROOT_DIR "")
+
 
 find_package (Python3 3.6 REQUIRED COMPONENTS Interpreter Development)
 
