@@ -327,6 +327,8 @@ namespace gpstk {
       ObsID::validRinexTrackingCodes['R']['1'] = "PC* ";
       ObsID::validRinexTrackingCodes['R']['2'] = "PC* ";
       ObsID::validRinexTrackingCodes['R']['3'] = "IQX* ";
+      ObsID::validRinexTrackingCodes['R']['4'] = "ABX* ";
+      ObsID::validRinexTrackingCodes['R']['6'] = "ABX* ";
 
       ObsID::validRinexTrackingCodes['E']['1'] = "ABCIQXZ* ";
       ObsID::validRinexTrackingCodes['E']['5'] = "IQX* ";
@@ -338,10 +340,12 @@ namespace gpstk {
       ObsID::validRinexTrackingCodes['S']['5'] = "IQX* ";
 
       //NB 24Jun2013 MGEX data uses 2!  RINEX 3.03: 1 for 3.02, 2 for 3.0[013]
-      ObsID::validRinexTrackingCodes['C']['1'] = "IQX* ";
+      ObsID::validRinexTrackingCodes['C']['1'] = "IQXP* ";
       ObsID::validRinexTrackingCodes['C']['2'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['6'] = "IQX* ";
       ObsID::validRinexTrackingCodes['C']['7'] = "IQX* ";
+      ObsID::validRinexTrackingCodes['C']['5'] = "IQX* ";
+      ObsID::validRinexTrackingCodes['C']['8'] = "IQX* ";
 
       ObsID::validRinexTrackingCodes['J']['1'] = "CSLXZ* ";
       ObsID::validRinexTrackingCodes['J']['2'] = "SLX* ";

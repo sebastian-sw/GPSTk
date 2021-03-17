@@ -3,6 +3,10 @@
 #----------------------------------------
 
 cmake_minimum_required( VERSION 2.8.4  )
+cmake_policy(SET CMP0086 OLD)
+cmake_policy(SET CMP0078 OLD)
+#set(UseSWIG_TARGET_NAME_PREFERENCE LEGACY)
+cmake_policy(SET CMP0079 OLD)
 include( make_copy_targets.cmake )
 
 include( PythonSetup.cmake )
@@ -42,7 +46,7 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 endif()
 
 
-set_source_files_properties( gpstk.i PROPERTIES CPLUSPLUS ON )
+set_source_files_properties( gpstk.i PROPERTIES CPLUSPLUS ON)
 
 if( DEBUG_SWITCH )
     message( STATUS "SWIG_EXECUTABLE          = ${SWIG_EXECUTABLE}" )
@@ -64,14 +68,13 @@ endif()
 #       gpstk_swig.hpp which is included in gpstk.i
 set( SWIG_MODULE "gpstk" )
 
-include_directories( ${PYTHON_INCLUDE_DIRS} )
+include_directories( ${Python3_INCLUDE_DIRS} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
-swig_add_module( ${SWIG_MODULE} python gpstk.i ) # why not also list all the other files.i here?!
+swig_add_library( ${SWIG_MODULE} LANGUAGE python SOURCES gpstk.i ) # why not also list all the other files.i here?!
 swig_link_libraries( ${SWIG_MODULE} gpstk )
-swig_link_libraries( ${SWIG_MODULE} ${PYTHON_LIBRARIES} )
-
+swig_link_libraries( ${SWIG_MODULE} ${Python3_LIBRARIES} )
 # Install the gpstk module into the package file tree
 set( MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR}/module )
 set( CMAKE_SWIG_OUTDIR ${MODULE_PATH}/${SWIG_MODULE} )
@@ -90,12 +93,12 @@ set( CMAKE_SWIG_OUTDIR ${MODULE_PATH}/${SWIG_MODULE} )
 add_custom_target(swig-make-directory ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${MODULE_PATH}/gpstk)
 add_dependencies("_${SWIG_MODULE}" swig-make-directory)
-add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${CMAKE_SWIG_OUTDIR} )
-add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${CMAKE_SWIG_OUTDIR} )
+#add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" $#{CMAKE_SWIG_OUTDIR} )
+#add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" $#{CMAKE_SWIG_OUTDIR} )
 
-add_custom_command( TARGET "_${SWIG_MODULE}"
-                    COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_BINARY_DIR}/libgpstk.so.${GPSTK_VERSION}" ${CMAKE_SWIG_OUTDIR}
-                    DEPENDS gpstk)
+#add_custom_command( TARGET "_${SWIG_MODULE}"
+#                    COMMAND ${CMAKE_COMMAND} -E copy "${PROJECT_BINARY_DIR}/libgpstk.so.${GPSTK_VERSION}" ${CMAKE_SWIG_OUTDIR}
+#                    DEPENDS gpstk)
 
 # Find all files in the gpstk, apps, and tests directories and set up dependancies to
 # copy them to the python module directory
@@ -132,15 +135,18 @@ configure_file( ${GPSTK_ROOT_PY_IN} ${GPSTK_ROOT_PY} )
 
 
 # Note: For setup.py install options, see https://docs.python.org/2/install/
-if( BUILD_FOR_PACKAGE_SWITCH )
-    # If building for a package, use the "root" switch to imitate the system package path
-    install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --root=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )
-elseif( PYTHON_USER_INSTALL )
-    # If performing a user-install, use the `--user` flag, otherwise it may not create the correct directores.
-    install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --user WORKING_DIRECTORY ${MODULE_PATH})" )
-else()
-    install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )
-endif()
+
+message(STATUS "Installing python package: ${PYTHON_EXECUTABLE} ${SETUP_PY} install")
+install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install WORKING_DIRECTORY ${MODULE_PATH})" )
+#if( BUILD_FOR_PACKAGE_SWITCH )
+#    # If building for a package, use the "root" switch to imitate the system package path
+#    install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --root=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )
+#elseif( PYTHON_USER_INSTALL )
+#    # If performing a user-install, use the `--user` flag, otherwise it may not create the correct directores.
+#    install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --user WORKING_DIRECTORY ${MODULE_PATH})" )
+#else()
+#    install( CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${MODULE_PATH})" )
+#endif()
 
 if( PIP_WHEEL_SWITCH )
     add_custom_target(swig-make-wheel ALL

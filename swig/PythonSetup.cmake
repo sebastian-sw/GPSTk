@@ -35,37 +35,19 @@ include( CustomPythonSetup.cmake
 # If a user-specified python configuration is not found, let CMake try to find the system python
 #------------------------------------------------------------
 if( ${PYTHON_CUSTOM_CONFIG} MATCHES "NOTFOUND" )
-  find_package( PythonInterp )
 
-  # It looks like the find for PythonLibs gets the 'first' Python.h it can find,
-  # which does not necessiarly match what the executable found by PythonInterp
-  # will be copacetic with. So, we set CMAKE_INCLUDE_PATH to what is returned
-  # by the found python-config
-  if( ${PYTHON_VERSION_MAJOR} EQUAL 3 )
-    execute_process( COMMAND "${PYTHON_EXECUTABLE}3-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
-    execute_process( COMMAND "${PYTHON_EXECUTABLE}3-config" "--prefix" OUTPUT_VARIABLE PYTHON_PREFIX)
 
-    string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
-    string(STRIP ${_python_include} _python_include)
-    string(SUBSTRING ${_python_include} 2 -1 _python_include) # strip the "-I"
-    set(CMAKE_INCLUDE_PATH ${_python_include})
+find_package (Python3 3.6 REQUIRED COMPONENTS Interpreter Development)
 
-    # Python 3 isn't well supported for earlier versions of CMAKE.  So we roll our own.
-    string(STRIP ${PYTHON_PREFIX} PYTHON_PREFIX)
-    set(PYTHON_LIBRARIES "${PYTHON_PREFIX}/lib/libpython${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}m.so")
-    set(PYTHON_INCLUDE_DIR ${_python_include})
-    set(PYTHON_INCLUDE_DIRS ${_python_include})
-    set(PYTHONLIBS_VERSION_STRING ${PYTHON_VERSION_STRING})
-    set(PYTHONLIBS_FOUND TRUE)
-  else()
-    execute_process( COMMAND "${PYTHON_EXECUTABLE}-config" "--includes" OUTPUT_VARIABLE PYTHON_INCLUDES)
-    string(REGEX MATCH "^-I(.*) " _python_include ${PYTHON_INCLUDES})
-    string(STRIP ${_python_include} _python_include)
-    string(SUBSTRING ${_python_include} 2 -1 _python_include) # strip the "-I"
-    set(CMAKE_INCLUDE_PATH ${_python_include})
+message(STATUS "Found ${Python3_EXECUTABLE}")
+set(CMAKE_INCLUDE_PATH ${Python3_INCLUDE_DIRS})
+set(PYTHON_INCLUDE_DIR ${Python3_INCLUDE_DIRS})
+include_directories(${Python3_INCLUDE_DIRS})
 
-    find_package( PythonLibs ${PYTHON_VERSION_STRING} REQUIRED )
-  endif()
+message(STATUS "Python libs: ${Python3_LIBRARIES}")
+message(STATUS "Python include: ${Python3_INCLUDE_DIRS}")
+message(STATUS "Installing python module to: ${Python3_SITELIB}")
+set(PYTHON_INSTALL_PREFIX ${Python3_SITELIB})
 
 endif()
 
@@ -74,22 +56,22 @@ endif()
 # Debug messaging
 #------------------------------------------------------------
 if( DEBUG_SWITCH OR NOT PYTHONLIBS_FOUND)
-  message( STATUS "PYTHONINTERP_FOUND        = ${PYTHONINTERP_FOUND}" )
-  message( STATUS "PYTHON_EXECUTABLE         = ${PYTHON_EXECUTABLE}" )
-  message( STATUS "PYTHON_VERSION_STRING     = ${PYTHON_VERSION_STRING}" )
-  message( STATUS "PYTHONLIBS_FOUND          = ${PYTHONLIBS_FOUND}" )
-  message( STATUS "PYTHON_LIBRARIES          = ${PYTHON_LIBRARIES}" )
-  message( STATUS "PYTHON_INCLUDE_DIR        = ${PYTHON_INCLUDE_DIRS}" )
-  message( STATUS "PYTHON_INCLUDE_DIRS       = ${PYTHON_INCLUDE_DIRS}" )
-  message( STATUS "PYTHONLIBS_VERSION_STRING = ${PYTHONLIBS_VERSION_STRING}" )
-  message( STATUS "PYTHON_INSTALL_PREFIX     = ${PYTHON_INSTALL_PREFIX}" )
+  message( STATUS "PYTHONINTERP_FOUND        = ${Python3_Interpreter_FOUND}" )
+  message( STATUS "PYTHON_EXECUTABLE         = ${Python3_EXECUTABLE}" )
+  message( STATUS "PYTHON_VERSION_STRING     = ${Python3_VERSION}" )
+  message( STATUS "PYTHONLIBS_FOUND          = ${Python3_LIBRARIES}" )
+  message( STATUS "PYTHON_LIBRARIES          = ${Python3_LIBRARIES}" )
+  message( STATUS "PYTHON_INCLUDE_DIR        = ${Python3_INCLUDE_DIRS}" )
+  message( STATUS "PYTHON_INCLUDE_DIRS       = ${Python3_INCLUDE_DIRS}" )
+  #message( STATUS "PYTHONLIBS_VERSION_STRING = ${Python3LIBS_VERSION_STRING}" )
+  message( STATUS "PYTHON_INSTALL_LOCATION     = ${Python3_SITELIB}" )
 endif()
 
 #------------------------------------------------------------
 # Consistent python library and headers could not be found
 #------------------------------------------------------------
-if( NOT PYTHONLIBS_FOUND )
-  message( STATUS "Cannot find requested version of PYTHONLIBS on your system." )
+if( NOT Python3_FOUND)
+  message( STATUS "Cannot find requested version of Python components on your system." )
   message( STATUS "Cannot build swig bindings without the right python libraries." )
   message( STATUS "PYTHON_LIBRARY and PYTHON_INCLUDE_DIR versions must match PYTHON_EXECUTABLE." )
   message( FATAL_ERROR "Cannot find PYTHONLIBS. Cannot proceed. Exiting now!" )

@@ -1665,6 +1665,7 @@ namespace gpstk
       else if(version == 3.01) allValid = allValid301;
       else if(version == 3.02) allValid = allValid302;
       else if(version == 3.03) allValid = allValid303;
+      else if(version == 3.04) allValid = allValid303;
       else
       {
          FFStreamError e("Unknown or unsupported RINEX version " + 
